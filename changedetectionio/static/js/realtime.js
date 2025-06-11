@@ -48,9 +48,9 @@ $(document).ready(function () {
             // Connect to Socket.IO on the same host/port, with path from template
             const socket = io({
                 path: socketio_url,  // This will be the path prefix like "/app/socket.io" from the template
-                transports: ['polling', 'websocket'],  // Try WebSocket but fall back to polling
-                reconnectionDelay: 1000,
-                reconnectionAttempts: 15
+                transports: ['websocket', 'polling'],
+                reconnectionDelay: 3000,
+                reconnectionAttempts: 25
             });
 
             // Connection status logging
@@ -96,6 +96,12 @@ $(document).ready(function () {
 
             socket.on('notification_event', function (data) {
                 console.log(`Stub handler for notification_event ${data.watch_uuid}`)
+            });
+
+            socket.on('watch_deleted', function (data) {
+                $('tr[data-watch-uuid="' + data.uuid + '"] td').fadeOut(500, function () {
+                    $(this).closest('tr').remove();
+                });
             });
 
             // Listen for periodically emitted watch data
